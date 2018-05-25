@@ -4759,13 +4759,11 @@ extern sNtQuerySystemInformation pNtQuerySystemInformation;
 extern sGetQueuedCompletionStatusEx pGetQueuedCompletionStatusEx;
 extern sSetFileCompletionNotificationModes pSetFileCompletionNotificationModes;
 extern sCreateSymbolicLinkW pCreateSymbolicLinkW;
-extern sCancelIoEx pCancelIoEx;
 extern sInitializeConditionVariable pInitializeConditionVariable;
 extern sSleepConditionVariableCS pSleepConditionVariableCS;
 extern sSleepConditionVariableSRW pSleepConditionVariableSRW;
 extern sWakeAllConditionVariable pWakeAllConditionVariable;
 extern sWakeConditionVariable pWakeConditionVariable;
-extern sCancelSynchronousIo pCancelSynchronousIo;
 extern sGetFinalPathNameByHandleW pGetFinalPathNameByHandleW;
 
 
