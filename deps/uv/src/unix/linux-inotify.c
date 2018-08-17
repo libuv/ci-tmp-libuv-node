@@ -19,7 +19,7 @@
  */
 
 #include "uv.h"
-#include "uv/tree.h"
+#include "tree.h"
 #include "internal.h"
 
 #include <stdint.h>

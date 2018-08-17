@@ -51,7 +51,7 @@
 
 #ifdef HAVE_IFADDRS_H
 # if defined(__ANDROID__)
-#  include "uv/android-ifaddrs.h"
+#  include "android-ifaddrs.h"
 # else
 #  include <ifaddrs.h>
 # endif
@@ -388,8 +388,7 @@ void uv__io_poll(uv_loop_t* loop, int timeout) {
        * free when we switch over to edge-triggered I/O.
        */
       if (pe->events == POLLERR || pe->events == POLLHUP)
-        pe->events |=
-          w->pevents & (POLLIN | POLLOUT | UV__POLLRDHUP | UV__POLLPRI);
+        pe->events |= w->pevents & (POLLIN | POLLOUT | UV__POLLPRI);
 
       if (pe->events != 0) {
         /* Run signal watchers last.  This also affects child process watchers

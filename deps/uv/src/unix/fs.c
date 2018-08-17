@@ -120,7 +120,11 @@
   do {                                                                        \
     if (cb != NULL) {                                                         \
       uv__req_register(loop, req);                                            \
-      uv__work_submit(loop, &req->work_req, uv__fs_work, uv__fs_done);        \
+      uv__work_submit(loop,                                                   \
+                      &req->work_req,                                         \
+                      UV__WORK_FAST_IO,                                       \
+                      uv__fs_work,                                            \
+                      uv__fs_done);                                           \
       return 0;                                                               \
     }                                                                         \
     else {                                                                    \
@@ -929,11 +933,7 @@ out:
     }
   }
 
-  if (result == 0)
-    return 0;
-
-  errno = UV__ERR(result);
-  return -1;
+  return result;
 #endif
 }
 
@@ -1120,7 +1120,6 @@ static void uv__fs_work(struct uv__work* w) {
     X(COPYFILE, uv__fs_copyfile(req));
     X(FCHMOD, fchmod(req->file, req->mode));
     X(FCHOWN, fchown(req->file, req->uid, req->gid));
-    X(LCHOWN, lchown(req->path, req->uid, req->gid));
     X(FDATASYNC, uv__fs_fdatasync(req));
     X(FSTAT, uv__fs_fstat(req->file, &req->statbuf));
     X(FSYNC, uv__fs_fsync(req));
@@ -1241,20 +1240,6 @@ int uv_fs_fchown(uv_loop_t* loop,
                  uv_fs_cb cb) {
   INIT(FCHOWN);
   req->file = file;
-  req->uid = uid;
-  req->gid = gid;
-  POST;
-}
-
-
-int uv_fs_lchown(uv_loop_t* loop,
-                 uv_fs_t* req,
-                 const char* path,
-                 uv_uid_t uid,
-                 uv_gid_t gid,
-                 uv_fs_cb cb) {
-  INIT(LCHOWN);
-  PATH;
   req->uid = uid;
   req->gid = gid;
   POST;

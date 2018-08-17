@@ -55,7 +55,11 @@
   do {                                                                        \
     if (cb != NULL) {                                                         \
       uv__req_register(loop, req);                                            \
-      uv__work_submit(loop, &req->work_req, uv__fs_work, uv__fs_done);        \
+      uv__work_submit(loop,                                                   \
+                      &req->work_req,                                         \
+                      UV__WORK_FAST_IO,                                       \
+                      uv__fs_work,                                            \
+                      uv__fs_done);                                           \
       return 0;                                                               \
     } else {                                                                  \
       uv__fs_work(&req->work_req);                                            \
@@ -1971,10 +1975,6 @@ static void fs__fchown(uv_fs_t* req) {
 }
 
 
-static void fs__lchown(uv_fs_t* req) {
-  req->result = 0;
-}
-
 static void uv__fs_work(struct uv__work* w) {
   uv_fs_t* req;
 
@@ -2012,7 +2012,6 @@ static void uv__fs_work(struct uv__work* w) {
     XX(REALPATH, realpath)
     XX(CHOWN, chown)
     XX(FCHOWN, fchown);
-    XX(LCHOWN, lchown);
     default:
       assert(!"bad uv_fs_type");
   }
@@ -2294,19 +2293,6 @@ int uv_fs_chown(uv_loop_t* loop, uv_fs_t* req, const char* path, uv_uid_t uid,
 int uv_fs_fchown(uv_loop_t* loop, uv_fs_t* req, uv_file fd, uv_uid_t uid,
     uv_gid_t gid, uv_fs_cb cb) {
   INIT(UV_FS_FCHOWN);
-  POST;
-}
-
-
-int uv_fs_lchown(uv_loop_t* loop, uv_fs_t* req, const char* path, uv_uid_t uid,
-    uv_gid_t gid, uv_fs_cb cb) {
-  int err;
-
-  INIT(UV_FS_LCHOWN);
-  err = fs__capture_path(req, path, NULL, cb != NULL);
-  if (err) {
-    return uv_translate_sys_error(err);
-  }
   POST;
 }
 

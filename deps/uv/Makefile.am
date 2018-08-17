@@ -17,10 +17,7 @@ ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -I$(top_srcdir)/include \
               -I$(top_srcdir)/src
 
-include_HEADERS=include/uv.h
-
-uvincludedir = $(includedir)/uv
-uvinclude_HEADERS=include/uv/errno.h include/uv/threadpool.h include/uv/version.h
+include_HEADERS=include/uv.h include/uv-errno.h include/uv-threadpool.h include/uv-version.h
 
 CLEANFILES =
 
@@ -32,7 +29,6 @@ libuv_la_SOURCES = src/fs-poll.c \
                    src/inet.c \
                    src/queue.h \
                    src/threadpool.c \
-                   src/timer.c \
                    src/uv-data-getter-setters.c \
                    src/uv-common.c \
                    src/uv-common.h \
@@ -46,7 +42,7 @@ endif
 
 if WINNT
 
-uvinclude_HEADERS += include/uv/win.h include/uv/tree.h
+include_HEADERS += include/uv-win.h include/tree.h
 AM_CPPFLAGS += -I$(top_srcdir)/src/win \
                -DWIN32_LEAN_AND_MEAN \
                -D_WIN32_WINNT=0x0600
@@ -75,6 +71,7 @@ libuv_la_SOURCES += src/win/async.c \
                     src/win/stream-inl.h \
                     src/win/tcp.c \
                     src/win/thread.c \
+                    src/win/timer.c \
                     src/win/tty.c \
                     src/win/udp.c \
                     src/win/util.c \
@@ -85,7 +82,7 @@ libuv_la_SOURCES += src/win/async.c \
 
 else  # WINNT
 
-uvinclude_HEADERS += include/uv/unix.h
+include_HEADERS += include/uv-unix.h
 AM_CPPFLAGS += -I$(top_srcdir)/src/unix
 libuv_la_SOURCES += src/unix/async.c \
                    src/unix/atomic-ops.h \
@@ -105,6 +102,7 @@ libuv_la_SOURCES += src/unix/async.c \
                    src/unix/stream.c \
                    src/unix/tcp.c \
                    src/unix/thread.c \
+                   src/unix/timer.c \
                    src/unix/tty.c \
                    src/unix/udp.c
 
@@ -123,6 +121,7 @@ EXTRA_DIST = test/fixtures/empty_file \
              README.md \
              checksparse.sh \
              vcbuild.bat \
+             Makefile.mingw \
              common.gypi \
              gyp_uv.py \
              uv.gyp
@@ -334,19 +333,19 @@ libuv_la_CFLAGS += -D_ALL_SOURCE \
                    -D_LINUX_SOURCE_COMPAT \
                    -D_THREAD_SAFE \
                    -DHAVE_SYS_AHAFS_EVPRODS_H
-uvinclude_HEADERS += include/uv/aix.h
+include_HEADERS += include/uv-aix.h
 libuv_la_SOURCES += src/unix/aix.c src/unix/aix-common.c
 endif
 
 if ANDROID
-uvinclude_HEADERS += include/uv/android-ifaddrs.h \
-                   include/uv/pthread-barrier.h
+include_HEADERS += include/android-ifaddrs.h \
+                   include/pthread-barrier.h
 libuv_la_SOURCES += src/unix/android-ifaddrs.c \
                     src/unix/pthread-fixes.c
 endif
 
 if CYGWIN
-uvinclude_HEADERS += include/uv/posix.h
+include_HEADERS += include/uv-posix.h
 libuv_la_CFLAGS += -D_GNU_SOURCE
 libuv_la_SOURCES += src/unix/cygwin.c \
                     src/unix/bsd-ifaddrs.c \
@@ -360,8 +359,8 @@ libuv_la_SOURCES += src/unix/cygwin.c \
 endif
 
 if DARWIN
-uvinclude_HEADERS += include/uv/darwin.h \
-                   include/uv/pthread-barrier.h
+include_HEADERS += include/uv-darwin.h \
+                   include/pthread-barrier.h
 libuv_la_CFLAGS += -D_DARWIN_USE_64_BIT_INODE=1
 libuv_la_CFLAGS += -D_DARWIN_UNLIMITED_SELECT=1
 libuv_la_SOURCES += src/unix/bsd-ifaddrs.c \
@@ -374,7 +373,7 @@ test_run_tests_LDFLAGS += -lutil
 endif
 
 if DRAGONFLY
-uvinclude_HEADERS += include/uv/bsd.h
+include_HEADERS += include/uv-bsd.h
 libuv_la_SOURCES += src/unix/bsd-ifaddrs.c \
                     src/unix/freebsd.c \
                     src/unix/kqueue.c \
@@ -383,7 +382,7 @@ test_run_tests_LDFLAGS += -lutil
 endif
 
 if FREEBSD
-uvinclude_HEADERS += include/uv/bsd.h
+include_HEADERS += include/uv-bsd.h
 libuv_la_SOURCES += src/unix/bsd-ifaddrs.c \
                     src/unix/freebsd.c \
                     src/unix/kqueue.c \
@@ -392,7 +391,7 @@ test_run_tests_LDFLAGS += -lutil
 endif
 
 if LINUX
-uvinclude_HEADERS += include/uv/linux.h
+include_HEADERS += include/uv-linux.h
 libuv_la_CFLAGS += -D_GNU_SOURCE
 libuv_la_SOURCES += src/unix/linux-core.c \
                     src/unix/linux-inotify.c \
@@ -419,7 +418,7 @@ libuv_la_SOURCES += src/unix/cygwin.c \
 endif
 
 if NETBSD
-uvinclude_HEADERS += include/uv/bsd.h
+include_HEADERS += include/uv-bsd.h
 libuv_la_SOURCES += src/unix/bsd-ifaddrs.c \
                     src/unix/kqueue.c \
                     src/unix/netbsd.c \
@@ -428,7 +427,7 @@ test_run_tests_LDFLAGS += -lutil
 endif
 
 if OPENBSD
-uvinclude_HEADERS += include/uv/bsd.h
+include_HEADERS += include/uv-bsd.h
 libuv_la_SOURCES += src/unix/bsd-ifaddrs.c \
                     src/unix/kqueue.c \
                     src/unix/openbsd.c \
@@ -437,14 +436,14 @@ test_run_tests_LDFLAGS += -lutil
 endif
 
 if SUNOS
-uvinclude_HEADERS += include/uv/sunos.h
+include_HEADERS += include/uv-sunos.h
 libuv_la_CFLAGS += -D__EXTENSIONS__ -D_XOPEN_SOURCE=500
 libuv_la_SOURCES += src/unix/no-proctitle.c \
                     src/unix/sunos.c
 endif
 
 if OS390
-uvinclude_HEADERS += include/uv/pthread-barrier.h
+include_HEADERS += include/pthread-barrier.h
 libuv_la_CFLAGS += -D_UNIX03_THREADS \
                    -D_UNIX03_SOURCE \
                    -D_OPEN_SYS_IF_EXT=1 \

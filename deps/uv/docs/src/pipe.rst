@@ -21,9 +21,7 @@ Data types
 Public members
 ^^^^^^^^^^^^^^
 
-.. c:member:: int uv_pipe_t.ipc
-
-    Whether this pipe is suitable for handle passing between processes.
+N/A
 
 .. seealso:: The :c:type:`uv_stream_t` members also apply.
 
