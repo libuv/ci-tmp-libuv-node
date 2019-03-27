@@ -53,6 +53,7 @@ set(uv_test_sources
     test/test-fs-event.c
     test/test-fs-poll.c
     test/test-fs.c
+    test/test-fs-readdir.c
     test/test-get-currentexe.c
     test/test-get-loadavg.c
     test/test-get-memory.c
@@ -62,6 +63,7 @@ set(uv_test_sources
     test/test-getnameinfo.c
     test/test-getsockname.c
     test/test-getters-setters.c
+    test/test-gettimeofday.c
     test/test-handle-fileno.c
     test/test-homedir.c
     test/test-hrtime.c
