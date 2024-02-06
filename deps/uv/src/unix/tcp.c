@@ -220,21 +220,40 @@ static int uv__is_ipv6_link_local(const struct sockaddr* addr) {
 
 
 static int uv__ipv6_link_local_scope_id(void) {
-/* disable link local on AIX & PASE for now */
-#if defined(_AIX)
-  return 0;
-#else
   struct sockaddr_in6* a6;
+  int rv;
+#if defined(_AIX)
+  /* AIX & IBM i do not have ifaddrs
+   * so fallback to use uv_interface_addresses */
+  uv_interface_address_t* interfaces;
+  uv_interface_address_t* ifa;
+  int count, i;
+
+  if (uv_interface_addresses(&interfaces, &count))
+    return 0;
+
+  rv = 0;
+
+  for (ifa = interfaces; ifa != &interfaces[count]; ifa++) {
+    if (uv__is_ipv6_link_local((struct sockaddr*) &ifa->address)) {
+      rv = ifa->address.address6.sin6_scope_id;
+      break;
+    }
+  }
+
+  uv_free_interface_addresses(interfaces, count);
+
+#else
   struct ifaddrs* ifa;
   struct ifaddrs* p;
-  int rv;
 
   if (getifaddrs(&ifa))
     return 0;
 
   for (p = ifa; p != NULL; p = p->ifa_next)
-    if (uv__is_ipv6_link_local(p->ifa_addr))
-      break;
+    if (p->ifa_addr != NULL)
+      if (uv__is_ipv6_link_local(p->ifa_addr))
+        break;
 
   rv = 0;
   if (p != NULL) {
@@ -243,8 +262,9 @@ static int uv__ipv6_link_local_scope_id(void) {
   }
 
   freeifaddrs(ifa);
+#endif /* defined(_AIX) */
+
   return rv;
-#endif
 }
 
 
